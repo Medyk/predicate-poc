@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: demo
+  jpa:
+    show-sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
