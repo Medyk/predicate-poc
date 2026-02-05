@@ -1,13 +1,40 @@
 package com.example.demo;
 
+
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
 
 @Component
 public final class BookPredicateRepository {
+    private static final AtomicLong serial = new AtomicLong(21L);
+
+    public Optional<Book> findById(Long id) {
+        return allBooksStorage.stream()
+                .filter(book -> book.getId().equals(id))
+                .findFirst();
+    }
+
+    public Book save(Book book) {
+        findById(book.getId()).ifPresentOrElse(
+                existingBook -> {
+                    int index = allBooksStorage.indexOf(existingBook);
+                    allBooksStorage.set(index, book);
+                },
+                () -> {
+                    book.setId(serial.incrementAndGet());
+                    allBooksStorage.add(book);
+                }
+        );
+        return book;
+    }
+
+
     /**
      * Generyczna metoda filtrująca listę obiektów na podstawie listy predykatów.
      * Działa jak logiczne AND dla wszystkich warunków.
@@ -34,7 +61,7 @@ public final class BookPredicateRepository {
     /**
      * Local storage.
      */
-    private static final List<Book> allBooksStorage = List.of(
+    private static final List<Book> allBooksStorage = new ArrayList<>(List.of(
             new Book(1L, "Effective Java", "Joshua Bloch", "978-0134685991", 2018),
             new Book(2L, "Clean Code", "Robert C. Martin", "978-0132350884", 2008),
             new Book(3L, "Effective Java (2nd Edition)", "Joshua Bloch", "978-0321356680", 2008),
@@ -55,5 +82,5 @@ public final class BookPredicateRepository {
             new Book(18L, "Clean Code (Reprint)", "Robert C. Martin", "978-0132350884", 2009),
             new Book(19L, "The Clean Coder", "Robert C. Martin", "978-0137081073", 2011),
             new Book(20L, "Patterns of Enterprise Application Architecture", "Martin Fowler", "978-0321127426", 2002)
-    );
+    ));
 }

@@ -4,6 +4,8 @@ package com.example.demo;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,21 @@ public class BookJpaService {
     // Wstrzykiwanie przez konstruktor (zgodnie z Twoimi wytycznymi)
     public BookJpaService(BookJpaRepository bookRepository) {
         this.bookRepository = bookRepository;
+    }
+
+    @Transactional
+    public Book patchBook(final BookPatch patch) {
+        if (patch.uid == null) return null;
+        Book book = bookRepository.findById(patch.uid).orElse(null);
+        if (book == null) return null;
+        if (patch.title != null) book.setTitle(patch.title.orElse(null));
+        if (patch.author != null) book.setAuthor(patch.author.orElse(null));
+        if (patch.year != null) book.setYear(patch.year.orElse(null));
+        return bookRepository.save(book);
+    }
+
+    public Book getBook(final Long id) {
+        return bookRepository.findById(id).orElse(null);
     }
 
     public List<Book> searchBooks(final BookQuery query, final int limit) {
@@ -31,11 +48,11 @@ public class BookJpaService {
         // specs.add(BookSpecifications.hasFieldNameIn(query.title, query.author));
 
         if (query.minYear != null) {
-            specs.add((root, q, cb) -> cb.greaterThanOrEqualTo(root.get("pub_year"), query.minYear));
+            specs.add((root, q, cb) -> cb.greaterThanOrEqualTo(root.get("year"), query.minYear));
         }
 
         if (query.maxYear != null) {
-            specs.add((root, q, cb) -> cb.lessThanOrEqualTo(root.get("pub_year"), query.maxYear));
+            specs.add((root, q, cb) -> cb.lessThanOrEqualTo(root.get("year"), query.maxYear));
         }
 
         // 2. Redukcja: Łączymy listę w jedną Specyfikację używając AND

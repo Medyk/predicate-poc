@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -18,5 +19,6 @@ public class Book {
     public String title;
     public String author;
     public String isbn;
-    public Integer pub_year;
+    @Column(name = "pub_year")
+    public Integer year;
 }
