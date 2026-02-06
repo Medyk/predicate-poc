@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.demo.BookSpecifications.Mode;
+
 
 @Service
 public class BookJpaService {
@@ -44,8 +46,8 @@ public class BookJpaService {
         }
 
         // Zakładamy, że BookSpecifications to klasa, którą stworzyliśmy w poprzednich krokach
-        specs.add(BookSpecifications.hasTitleIn(query.title));
-        // specs.add(BookSpecifications.hasFieldNameIn(query.title, query.author));
+//        specs.add(BookSpecifications.hasTitleIn(query.title));
+        specs.add(BookSpecifications.hasFieldNameIn("title", query.title, query.search));
 
         if (query.minYear != null) {
             specs.add((root, q, cb) -> cb.greaterThanOrEqualTo(root.get("year"), query.minYear));

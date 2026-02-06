@@ -13,4 +13,5 @@ public class BookQuery {
     public List<String> title;
     public Integer minYear;
     public Integer maxYear;
+    public BookSpecifications.Mode search;
 }
