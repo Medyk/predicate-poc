@@ -1,8 +1,12 @@
 package com.example.demo;
 
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +28,11 @@ public class BookController {
         this.bookJpaService = bookJpaService;
     }
 
+    @GetMapping("/favicon.ico")
+    public void favicon() {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
     /**
      * Get books.
      * 
@@ -31,8 +40,9 @@ public class BookController {
      * @return
      */
     @GetMapping(value = "/", produces = "application/json")
-    public List<Book> getBooks(final BookQuery query) {
-        return bookPredicateService.searchBooks(query, 5);
+    public List<Book> getBooks(final BookQuery query,
+                               @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) final Pageable pageable) {
+        return bookPredicateService.searchBooks(query, pageable);
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
@@ -41,7 +51,7 @@ public class BookController {
     }
 
     @PatchMapping(value = "/", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Book> patchBook(@RequestBody final BookPatch patch) {
+    public ResponseEntity<Book> patchBook(@Valid @RequestBody final BookPatch patch) {
         log.info("PATCH: {}", patch);
         Book book = bookPredicateService.patchBook(patch);
         if (book == null) {
@@ -53,8 +63,9 @@ public class BookController {
     }
 
     @GetMapping(value = "/jpa", produces = "application/json")
-    public List<Book> getBooksJpa(final BookQuery query) {
-        return bookJpaService.searchBooks(query, 5);
+    public List<Book> getBooksJpa(final BookQuery query,
+                                  @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) final Pageable pageable) {
+        return bookJpaService.searchBooks(query, pageable);
     }
 
     @GetMapping(value = "/jpa/{id}", produces = "application/json")
@@ -63,7 +74,7 @@ public class BookController {
     }
 
     @PatchMapping(value = "/jpa", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Book> patchBookJpa(@RequestBody final BookPatch patch) {
+    public ResponseEntity<Book> patchBookJpa(@Valid @RequestBody final BookPatch patch) {
         log.info("PATCH: {}", patch);
         Book book = bookJpaService.patchBook(patch);
         if (book == null) {

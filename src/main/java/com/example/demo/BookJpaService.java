@@ -9,8 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.demo.BookSpecifications.Mode;
-
 
 @Service
 public class BookJpaService {
@@ -37,7 +35,7 @@ public class BookJpaService {
         return bookRepository.findById(id).orElse(null);
     }
 
-    public List<Book> searchBooks(final BookQuery query, final int limit) {
+    public List<Book> searchBooks(final BookQuery query, final Pageable pageable) {
         // 1. Zbieramy specyfikacje (podobnie jak wcześniej Predykaty)
         List<Specification<Book>> specs = new ArrayList<>();
 
@@ -64,6 +62,6 @@ public class BookJpaService {
                 .reduce(Specification.where(BookSpecifications.always()), Specification::and);
 
         // 3. Wykonanie zapytania SQL na bazie
-        return bookRepository.findAll(combinedSpec, Pageable.ofSize(limit)).getContent();
+        return bookRepository.findAll(combinedSpec, pageable).getContent();
     }
 }

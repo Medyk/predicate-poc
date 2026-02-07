@@ -1,6 +1,7 @@
 package com.example.demo;
 
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,10 +36,10 @@ public class BookPredicateService {
     /**
      *
      * @param query
-     * @param limit
+     * @param pageable
      * @return
      */
-    public List<Book> searchBooks(final BookQuery query, final int limit) {
+    public List<Book> searchBooks(final BookQuery query, final Pageable pageable) {
         // 1. Budowanie listy filtrów (dynamicznie!)
         List<Predicate<Book>> filters = new ArrayList<>();
 
@@ -59,6 +60,6 @@ public class BookPredicateService {
         }
 
         // 2. Wywołanie generycznej metody (to zastępuje repository.findAll(spec))
-        return bookRepository.findAll(filters, limit);
+        return bookRepository.findAll(filters, pageable);
     }
 }

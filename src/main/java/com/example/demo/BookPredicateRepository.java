@@ -1,6 +1,7 @@
 package com.example.demo;
 
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -40,10 +41,10 @@ public final class BookPredicateRepository {
      * Działa jak logiczne AND dla wszystkich warunków.
      *
      * @param predicates Lista warunków (np. maAutora, jestDostępna)
-     * @param limit Limit wyników
+     * @param pageable Limit wyników
      * @return Przefiltrowana lista
      */
-    public List<Book> findAll(List<Predicate<Book>> predicates, int limit) {
+    public List<Book> findAll(List<Predicate<Book>> predicates, final Pageable pageable) {
         // 1. Redukcja listy warunków do jednego "Super-Predykatu"
         // x -> true to element neutralny (jak 1 w mnożeniu),
         // dzięki temu pusta lista filtrów zwróci wszystko.
@@ -53,7 +54,8 @@ public final class BookPredicateRepository {
         // 2. Wykonanie filtrowania
         return allBooksStorage.stream()
                 .filter(compositePredicate)
-                .limit(limit)
+                // does not support sorting
+                .limit(pageable.getPageSize())
                 .toList(); // Wymaga Java 16+
     }
 
