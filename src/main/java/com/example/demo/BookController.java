@@ -42,6 +42,20 @@ public class BookController {
     @GetMapping(value = "/", produces = "application/json")
     public List<Book> getBooks(final BookQuery query,
                                @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) final Pageable pageable) {
+        log.info("GET app/json: {}", query);
+        return bookPredicateService.searchBooks(query, pageable);
+    }
+
+    /**
+     * Get books.
+     *
+     * @param query
+     * @return
+     */
+    @GetMapping(value = "/", produces = {"application/vnd.book.v1+json", "application/vnd.book.v1+xml"})
+    public List<Book> getBooksVndV1(final BookQuery query,
+                               @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) final Pageable pageable) {
+        log.info("GET vnd+json: {}", query);
         return bookPredicateService.searchBooks(query, pageable);
     }
 
@@ -52,7 +66,7 @@ public class BookController {
 
     @PatchMapping(value = "/", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Book> patchBook(@Valid @RequestBody final BookPatch patch) {
-        log.info("PATCH: {}", patch);
+        log.info("PATCH predicate: {}", patch);
         Book book = bookPredicateService.patchBook(patch);
         if (book == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book not found");
@@ -75,7 +89,7 @@ public class BookController {
 
     @PatchMapping(value = "/jpa", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Book> patchBookJpa(@Valid @RequestBody final BookPatch patch) {
-        log.info("PATCH: {}", patch);
+        log.info("PATCH jpa: {}", patch);
         Book book = bookJpaService.patchBook(patch);
         if (book == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book not found");
