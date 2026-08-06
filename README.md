@@ -1,12 +1,14 @@
 # Custom models
 
 ```bash
-# 
 # custom model in JSON
 curl -vk -H "Accept: application/vnd.book.v1+json" http://localhost:8080/
 
 # custom model in XML
 curl -vk -H "Accept: application/vnd.book.v1+xml" http://localhost:8080/
+
+# custom model V2 in JSON
+curl -vk -H "Accept: application/vnd.book.v2+json" http://localhost:8080/
 ```
 
 # Client model negotiation

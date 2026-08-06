@@ -59,6 +59,16 @@ public class BookController {
         return bookPredicateService.searchBooks(query, pageable);
     }
 
+    @GetMapping(value = "/", produces = {"application/vnd.book.v2+json", "application/vnd.book.v2+xml"})
+    public List<BookV2> getBooksVndV2(final BookQuery query,
+                                    @PageableDefault(size = 5, sort = "id", direction = Sort.Direction.ASC) final Pageable pageable) {
+        log.info("GET vnd.v2+json: {}", query);
+        return bookPredicateService.searchBooks(query, pageable)
+                .stream()
+                .map(BookV2::fromBook)
+                .toList();
+    }
+
     @GetMapping(value = "/{id}", produces = "application/json")
     public Book getBook(@PathVariable final Long id) {
         return bookPredicateService.getBook(id);
